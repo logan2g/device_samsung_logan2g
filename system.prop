@@ -1,0 +1,32 @@
+#
+# system.prop for logan2g
+#
+ro.sf.lcd_density=240
+ro.sf.lcd_width = 52
+ro.sf.lcd_height = 87
+ro.opengles.version=131072
+ro.product.hardware=logan
+ro.lcd_brightness=160
+
+debug.hwui.render_dirty_regions=false
+
+# delay for ConnectivityChange broadcast (ms)
+conn.connectivity_change_delay = 0
+
+# NK console device
+persist.ttydev=ttyVUART0
+
+# MultiTouch support
+ro.product.multi_touch_enabled=true
+ro.product.max_num_touch=2
+
+# RIL
+ril.sim2.present=1
+ro.ril.hsxpa=1
+persist.msms.phone_count=2
+
+ro.secure=0
+ro.adb.secure=0
+service.adb.root=1
+ro.allow.mock.location=1
+ro.debuggable=1

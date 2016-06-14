@@ -1,0 +1,58 @@
+From 077c083d8af2746c36b68efa2b9d76a2985fd2d6 Mon Sep 17 00:00:00 2001
+From: Aman Kumar <amankumarmicro@gmail.com>
+Date: Thu, 25 Feb 2016 14:23:30 +0530
+Subject: [PATCH] ShutDown fix |logan2g
+
+---
+ .../java/com/android/server/BatteryService.java     | 21 ---------------------
+ 1 file changed, 21 deletions(-)
+
+diff --git a/frameworks/base/services/java/com/android/server/BatteryService.java b/frameworks/base/services/java/com/android/server/BatteryService.java
+index 3b0d930..c4465d5 100644
+--- a/frameworks/base/services/java/com/android/server/BatteryService.java
++++ b/frameworks/base/services/java/com/android/server/BatteryService.java
+@@ -203,7 +203,6 @@ public final class BatteryService extends IBatteryService.Stub {
+         // check our power situation now that it is safe to display the shutdown dialog.
+         synchronized (mLock) {
+             shutdownIfNoPowerLocked();
+-            shutdownIfOverTempLocked();
+         }
+     }
+ 
+@@ -326,25 +325,6 @@ public final class BatteryService extends IBatteryService.Stub {
+         }
+     }
+ 
+-    private void shutdownIfOverTempLocked() {
+-        // shut down gracefully if temperature is too high (> 68.0C by default)
+-        // wait until the system has booted before attempting to display the
+-        // shutdown dialog.
+-        if (mBatteryProps.batteryTemperature > mShutdownBatteryTemperature) {
+-            mHandler.post(new Runnable() {
+-                @Override
+-                public void run() {
+-                    if (ActivityManagerNative.isSystemReady()) {
+-                        Intent intent = new Intent(Intent.ACTION_REQUEST_SHUTDOWN);
+-                        intent.putExtra(Intent.EXTRA_KEY_CONFIRM, false);
+-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+-                        mContext.startActivityAsUser(intent, UserHandle.CURRENT);
+-                    }
+-                }
+-            });
+-        }
+-    }
+-
+     private void update(BatteryProperties props) {
+         synchronized (mLock) {
+             if (!mUpdatesStopped) {
+@@ -433,7 +413,6 @@ public final class BatteryService extends IBatteryService.Stub {
+         }
+ 
+         shutdownIfNoPowerLocked();
+-        shutdownIfOverTempLocked();
+ 
+         if (mBatteryProps.batteryStatus != mLastBatteryStatus ||
+                 mBatteryProps.batteryHealth != mLastBatteryHealth ||
+-- 
+1.9.1
+

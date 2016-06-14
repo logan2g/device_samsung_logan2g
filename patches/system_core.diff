@@ -1,0 +1,72 @@
+diff --git a/include/ion/ion.h b/include/ion/ion.h
+index 018c0a1..6122539 100644
+--- a/include/ion/ion.h
++++ b/include/ion/ion.h
+@@ -31,6 +31,7 @@ int ion_alloc(int fd, size_t len, size_t align, unsigned int heap_mask,
+ 	      unsigned int flags, struct ion_handle **handle);
+ int ion_alloc_fd(int fd, size_t len, size_t align, unsigned int heap_mask,
+ 		 unsigned int flags, int *handle_fd);
++int ion_invalidate_fd(int fd, int handle_fd);
+ int ion_sync_fd(int fd, int handle_fd);
+ int ion_free(int fd, struct ion_handle *handle);
+ int ion_map(int fd, struct ion_handle *handle, size_t length, int prot,
+diff --git a/include/system/audio.h b/include/system/audio.h
+index 667fe41..397870b 100644
+--- a/include/system/audio.h
++++ b/include/system/audio.h
+@@ -56,6 +56,9 @@ typedef enum {
+     AUDIO_STREAM_ENFORCED_AUDIBLE = 7, /* Sounds that cannot be muted by user and must be routed to speaker */
+     AUDIO_STREAM_DTMF             = 8,
+     AUDIO_STREAM_TTS              = 9,
++#ifdef SPRD_HARDWARE
++    AUDIO_STREAM_FM               = 10,
++#endif
+ #ifdef QCOM_HARDWARE
+     AUDIO_STREAM_INCALL_MUSIC     = 10,
+ #endif
+@@ -80,8 +83,12 @@ typedef enum {
+                                           /* An example of remote presentation is Wifi Display */
+                                           /*  where a dongle attached to a TV can be used to   */
+                                           /*  play the mix captured by this audio source.      */
++#ifdef SPRD_HARDWARE
++    AUDIO_SOURCE_RECORD_NO_AUDIO     = 9, /* SPRD: add one audioSource type for slow motion */
++#else
+     AUDIO_SOURCE_FM_RX               = 9,
+     AUDIO_SOURCE_FM_RX_A2DP          = 10,
++#endif
+     AUDIO_SOURCE_CNT,
+     AUDIO_SOURCE_MAX                 = AUDIO_SOURCE_CNT - 1,
+     AUDIO_SOURCE_HOTWORD             = 1999, /* A low-priority, preemptible audio source for
+@@ -425,6 +432,10 @@ enum {
+     AUDIO_DEVICE_OUT_FM_TX                     = 0x100000,
+     AUDIO_DEVICE_OUT_SPDIF                     = 0x200000,
+ #endif
++#if defined(SPRD_HARDWARE)
++    AUDIO_DEVICE_OUT_FM_HEADSET                = 0x1000000,
++    AUDIO_DEVICE_OUT_FM_SPEAKER                = 0x2000000,
++#endif
+     AUDIO_DEVICE_OUT_DEFAULT                   = AUDIO_DEVICE_BIT_DEFAULT,
+     AUDIO_DEVICE_OUT_ALL      = (AUDIO_DEVICE_OUT_EARPIECE |
+                                  AUDIO_DEVICE_OUT_SPEAKER |
+@@ -450,6 +461,10 @@ enum {
+                                  AUDIO_DEVICE_OUT_FM_TX |
+                                  AUDIO_DEVICE_OUT_SPDIF |
+ #endif
++#if defined(SPRD_HARDWARE)
++                                 AUDIO_DEVICE_OUT_FM_HEADSET |
++                                 AUDIO_DEVICE_OUT_FM_SPEAKER |
++#endif
+                                  AUDIO_DEVICE_OUT_DEFAULT),
+     AUDIO_DEVICE_OUT_ALL_A2DP = (AUDIO_DEVICE_OUT_BLUETOOTH_A2DP |
+                                  AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES |
+@@ -459,6 +474,10 @@ enum {
+                                  AUDIO_DEVICE_OUT_BLUETOOTH_SCO_CARKIT),
+     AUDIO_DEVICE_OUT_ALL_USB  = (AUDIO_DEVICE_OUT_USB_ACCESSORY |
+                                  AUDIO_DEVICE_OUT_USB_DEVICE),
++#if defined(SPRD_HARDWARE)
++    AUDIO_DEVICE_OUT_ALL_FM   = (AUDIO_DEVICE_OUT_FM_HEADSET |
++                                 AUDIO_DEVICE_OUT_FM_SPEAKER),
++#endif
+ 
+     /* input devices */
+ #if defined(ICS_AUDIO_BLOB) || defined(MR0_AUDIO_BLOB)
